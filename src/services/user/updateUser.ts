@@ -2,11 +2,12 @@ import AppDataSource from "../../data-source";
 import { User } from "../../entities/user.entity";
 import { IUserUpdate } from "../../interfaces/users";
 import { hash } from "bcrypt";
+import { AppError } from "../../errors/appError";
 
 const updateUser = async (
   { name, email, password }: IUserUpdate,
   id: string
-): Promise<User | Array<string | number>> => {
+): Promise<User> => {
   const userRepository = AppDataSource.getRepository(User);
 
   const findUser = await userRepository.findOneBy({
@@ -14,7 +15,7 @@ const updateUser = async (
   });
 
   if (!findUser) {
-    return ["User not found", 404];
+    throw new AppError("User not found", 404);
   }
 
   await userRepository.update(id, {
