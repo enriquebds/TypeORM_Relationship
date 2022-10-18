@@ -2,6 +2,7 @@ import AppDataSource from "../../data-source";
 import { User } from "../../entities/user.entity";
 import { IUserRequest } from "../../interfaces/users";
 import { hash } from "bcrypt";
+import { AppError } from "../../errors/appError";
 
 const createUser = async ({
   name,
@@ -11,8 +12,16 @@ const createUser = async ({
 }: IUserRequest): Promise<User> => {
   const userRepository = AppDataSource.getRepository(User);
 
+  const userExists = await userRepository.findOneBy({
+    email,
+  });
+
+  if (userExists) {
+    throw new AppError("Email already being used", 400);
+  }
+
   if (!password) {
-    throw new Error("Password is missing");
+    throw new AppError("Password is missing", 400);
   }
 
   const hashedPassword = await hash(password, 10);
