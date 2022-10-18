@@ -1,5 +1,6 @@
 import AppDataSource from "../../data-source";
 import { User } from "../../entities/user.entity";
+import { AppError } from "../../errors/appError";
 
 const deleteUser = async (
   id: string
@@ -9,11 +10,11 @@ const deleteUser = async (
   const user = await userRepository.findOneBy({ id });
 
   if (!user) {
-    return ["User not found", 404];
+    throw new AppError("User not found", 404);
   }
 
   if (!user?.isActive) {
-    return ["This account are disabled", 400];
+    throw new AppError("This account are disabled", 400);
   }
 
   user.isActive = false;
