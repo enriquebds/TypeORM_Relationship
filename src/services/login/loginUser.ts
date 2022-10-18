@@ -2,6 +2,7 @@ import AppDataSource from "../../data-source";
 import { User } from "../../entities/user.entity";
 import { IUserLogin } from "../../interfaces/users";
 import { compare } from "bcrypt";
+import { AppError } from "../../errors/appError";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
@@ -13,13 +14,13 @@ const loginUser = async ({ email, password }: IUserLogin): Promise<string> => {
   });
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw new AppError("Invalid email or password", 403);
   }
 
   const passwordMatch = await compare(password, user.password);
 
   if (!passwordMatch) {
-    throw new Error("Invalid email or password");
+    throw new AppError("Invalid email or password", 403);
   }
 
   const token = jwt.sign(
