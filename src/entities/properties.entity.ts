@@ -6,11 +6,13 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from "typeorm";
 import { Addresses } from "./addresses.entity";
+import { Category } from "./categories.entity";
 
 @Entity("properties")
-class Properties {
+class Property {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -32,6 +34,9 @@ class Properties {
   @OneToOne(() => Addresses)
   @JoinColumn()
   address: Addresses;
+
+  @ManyToOne(() => Category)
+  category: Category;
 }
 
-export { Properties };
+export { Property };
