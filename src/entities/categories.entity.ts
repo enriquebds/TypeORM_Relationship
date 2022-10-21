@@ -4,9 +4,9 @@ import { Property } from "./properties.entity";
 @Entity("categories")
 class Category {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  readonly id: string;
 
-  @Column({ length: 60 })
+  @Column({ length: 60, nullable: false })
   name: string;
 
   @OneToMany(() => Property, (property) => property.category)
