@@ -3,7 +3,10 @@ import { Addresses } from "../../entities/addresses.entity";
 import { Property } from "../../entities/properties.entity";
 import { Category } from "../../entities/categories.entity";
 import { AppError } from "../../errors/appError";
-import { IPropertyRequest } from "../../interfaces/properties/index";
+import {
+  IAddressRequest,
+  IPropertyRequest,
+} from "../../interfaces/properties/index";
 
 const createProperty = async ({
   value,
@@ -16,12 +19,60 @@ const createProperty = async ({
   const addressRepository = AppDataSource.getRepository(Addresses);
 
   const property = await propertyRepository.find();
+  const addresses = await addressRepository.find();
+  const category = await categoryRepository.find();
 
-  const propertyExists = property.find((item) => item.id === item.id);
+  const propertyExists = property.find(
+    (item) => item.size === size && item.value === value
+  );
+  const addressExists = addresses.find((item) => {
+    item.district === address.district && item.number === address.number;
+  });
+  const categoryExists = category.find((item) => item.id === categoryId);
 
   if (propertyExists) {
     throw new AppError("Property already exists", 400);
   }
+
+  if (addressExists) {
+    throw new AppError("Address already exists", 400);
+  }
+
+  if (!categoryExists) {
+    throw new AppError("Invalid category", 404);
+  }
+
+  const newAddress: IAddressRequest = addressRepository.create({
+    district: address.district,
+    zipCode: address.zipCode,
+    number: address.number,
+    city: address.city,
+    state: address.state,
+  });
+
+  if (newAddress.zipCode.length > 8) {
+    throw new AppError("Invalid zipCode", 400);
+  }
+
+  if (newAddress.state.length > 2) {
+    throw new AppError("Invalid zipCode", 400);
+  }
+
+  await addressRepository.save(newAddress);
+
+  const newProperty = propertyRepository.create({
+    sold: false,
+    value,
+    size,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    address: newAddress,
+    category: categoryExists,
+  });
+
+  await propertyRepository.save(newProperty);
+
+  return newProperty;
 };
 
 export default createProperty;
