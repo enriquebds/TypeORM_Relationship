@@ -1,5 +1,6 @@
 import { Router } from "express";
 import createPropertyController from "../controllers/properties/createProperty.controller";
+import listPropertiesController from "../controllers/properties/listProperties.controller";
 import tokenAuthMiddleware from "../middlewares/tokenAuth.middleware";
 import verifyIsAdmMiddleware from "../middlewares/verifyIsAdm.middleware";
 
@@ -11,5 +12,6 @@ routes.post(
   verifyIsAdmMiddleware,
   createPropertyController
 );
+routes.get("", listPropertiesController);
 
 export default routes;
