@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
 import { Exclude } from "class-transformer";
+import { Schedules } from "./schedules.entity";
 
 @Entity("users")
 class User {
@@ -24,6 +26,9 @@ class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => Schedules, (schedules) => schedules.user)
+  schedules: Schedules[];
 
   @CreateDateColumn()
   createdAt: Date;
