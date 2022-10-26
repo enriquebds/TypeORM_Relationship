@@ -7,9 +7,11 @@ import {
   OneToOne,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { Addresses } from "./addresses.entity";
 import { Category } from "./categories.entity";
+import { Schedules } from "./schedules.entity";
 
 @Entity("properties")
 class Property {
@@ -37,6 +39,9 @@ class Property {
 
   @ManyToOne(() => Category)
   category: Category;
+
+  @OneToMany(() => Schedules, (schedules) => schedules.properties)
+  schedules: Schedules[];
 }
 
 export { Property };
