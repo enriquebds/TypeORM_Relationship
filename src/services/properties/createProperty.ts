@@ -20,7 +20,12 @@ const createProperty = async ({
 
   const property = await propertyRepository.find();
   const addresses = await addressRepository.find();
-  const category = await categoryRepository.find();
+  const categoryExists = await categoryRepository.findOneBy({
+    id: categoryId,
+  });
+  if (!categoryExists) {
+    throw new AppError("Invalid category", 404);
+  }
 
   const propertyExists = property.find(
     (item) => item.size === size && item.value === value
@@ -28,7 +33,6 @@ const createProperty = async ({
   const addressExists = addresses.find((item) => {
     item.district === address.district && item.number === address.number;
   });
-  const categoryExists = category.find((item) => item.id === categoryId);
 
   if (propertyExists) {
     throw new AppError("Property already exists", 400);
@@ -36,10 +40,6 @@ const createProperty = async ({
 
   if (addressExists) {
     throw new AppError("Address already exists", 400);
-  }
-
-  if (!categoryExists) {
-    throw new AppError("Invalid category", 404);
   }
 
   const newAddress: IAddressRequest = addressRepository.create({
