@@ -15,26 +15,17 @@ const createSchedules = async ({
   const propertyRepository = AppDataSource.getRepository(Property);
   const userRepository = AppDataSource.getRepository(User);
 
-  const property = await propertyRepository.findOneBy({
-    id: propertyId,
-  });
-  const schedules = await scheduleRepository.find();
   const userExists = await userRepository.find();
+  const properties = await propertyRepository.find();
 
-  const schedulesExists = schedules.find((schedules) => schedules);
   const user = userExists.find((item) => item.id === userId);
 
-  if (schedulesExists) {
-    throw new AppError("Already have an appointment at this time", 400);
-  }
-  if (!property) {
-    throw new AppError("Invalid property id", 404);
-  }
+  const property = properties.find((e) => e.id === propertyId);
 
   const createdSchedule = scheduleRepository.create({
     date,
     hour,
-    user,
+    user: user,
     properties: property,
   });
 
