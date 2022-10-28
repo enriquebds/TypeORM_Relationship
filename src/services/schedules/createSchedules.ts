@@ -19,7 +19,7 @@ const createSchedules = async ({
 
   if (takeAHour > 1800 || takeAHour < 800) {
     throw new AppError(
-      "It is not possible to schedule outside opening hours (opening hours from 8:00 to 18:00)",
+      "It is not possible to schedule outside opening hours (opening hours from 8:00am to 18:00pm)",
       400
     );
   }
@@ -28,7 +28,10 @@ const createSchedules = async ({
   const takeADay = createDate.getDay();
 
   if (takeADay === 0 || takeADay === 6) {
-    throw new AppError("Invalid date", 400);
+    throw new AppError(
+      "It is not possible to make an appointment on weekends.",
+      400
+    );
   }
 
   const userExists = await userRepository.find();
@@ -50,7 +53,7 @@ const createSchedules = async ({
   });
 
   if (schedules) {
-    throw new AppError("appointment already made", 400);
+    throw new AppError("Appointment already made", 400);
   }
   const createdSchedule = scheduleRepository.create({
     date,
